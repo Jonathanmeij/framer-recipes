@@ -131,9 +131,9 @@ function AppItem({
 }) {
     const { title, description, image } = app;
     return (
-        <motion.div className=" bg-zinc-900" layoutId={`app-card-${title}`}>
+        <motion.div className="w-full  bg-zinc-900" layoutId={`app-card-${title}`}>
             <div
-                className="flex items-center gap-4 px-4 cursor-pointer w-96"
+                className="flex items-center w-full gap-4 px-4 cursor-pointer max-w-96"
                 onClick={() => setCurrentApp(app)}
             >
                 <div className="flex-shrink-0 my-2 w-14 h-14">
