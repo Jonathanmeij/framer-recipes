@@ -12,37 +12,39 @@ export default function IosSlider() {
     const [volume, setVolume] = useState(50);
     const [region, setRegion] = useState<"top" | "middle" | "bottom">("middle");
 
-    const position = useMotionValue(0);
-    const y = useMotionValue(0);
+    const clientY = useMotionValue(0);
+    const overflow = useMotionValue(0);
     const ref = useRef<ElementRef<typeof Slider.Root>>(null);
 
-    useMotionValueEvent(position, "change", (latest) => {
+    function decay(value: number, max: number) {
+        const entry = value / max;
+        const sigmoid = 2 / (1 + Math.exp(-entry)) - 1;
+
+        return sigmoid * max;
+    }
+
+    useMotionValueEvent(clientY, "change", (latest) => {
         if (ref.current) {
             const bounds = ref.current.getBoundingClientRect();
+            let newOverflow = 0;
 
-            if (latest < 0) {
+            if (latest < bounds.top) {
                 setRegion("top");
-                y.set(-latest);
-            } else if (latest > bounds.height) {
+                newOverflow = bounds.top - latest;
+            } else if (latest > bounds.bottom) {
                 setRegion("bottom");
-                y.set(latest - bounds.height);
+                newOverflow = latest - bounds.bottom;
             } else {
                 setRegion("middle");
-                y.set(0);
+                newOverflow = 0;
             }
+
+            overflow.jump(decay(newOverflow, 30));
         }
     });
 
     return (
-        <div className="flex flex-col items-center justify-center gap-3 py-12">
-            <motion.div
-                className=" test-white"
-                style={{
-                    y: useTransform(() => (region === "top" ? -y.get() : 0)),
-                }}
-            >
-                test
-            </motion.div>
+        <div className="flex flex-col items-center justify-center gap-12 py-12">
             <Slider.Root
                 ref={ref}
                 className="relative flex items-center w-12 h-full select-none cursor-grab touch-none active:cursor-grabbing"
@@ -51,25 +53,40 @@ export default function IosSlider() {
                 orientation="vertical"
                 onPointerMove={(e) => {
                     if (e.buttons > 0) {
-                        const { top } = e.currentTarget.getBoundingClientRect();
-                        const overflowTop = e.clientY - top;
-                        position.set(overflowTop);
+                        clientY.set(e.clientY);
                     }
                 }}
                 onLostPointerCapture={() => {
-                    animate(y, 0, { type: "spring", stiffness: 500, damping: 32 });
+                    animate(overflow, 0, {
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 20,
+                    });
                 }}
             >
                 <motion.div className="flex grow">
                     <motion.div
                         style={{
                             scaleY: useTransform(() => {
-                                if (!ref.current) return 0;
+                                if (!ref.current) return 1;
                                 const bounds = ref.current.getBoundingClientRect();
 
-                                return (bounds.height + y.get()) / bounds.height;
+                                return (bounds.height + overflow.get()) / bounds.height;
                             }),
                             transformOrigin: region === "top" ? "bottom" : "top",
+                            y: useTransform(() => {
+                                if (region === "top")
+                                    return decay(-overflow.get() / 4, 30);
+                                if (region === "bottom")
+                                    return decay(overflow.get() / 4, 30);
+                                return 0;
+                            }),
+                            scaleX: useTransform(() => {
+                                if (!ref.current) return 1;
+                                const bounds = ref.current.getBoundingClientRect();
+
+                                return (bounds.width - overflow.get() / 8) / bounds.width;
+                            }),
                         }}
                         className="flex w-12 h-full grow"
                     >
@@ -79,31 +96,6 @@ export default function IosSlider() {
                     </motion.div>
                 </motion.div>
             </Slider.Root>
-
-            <motion.div
-                className=" test-white"
-                style={{
-                    y: region === "bottom" ? y : 0,
-                }}
-            >
-                test
-            </motion.div>
-
-            <div>
-                <p>
-                    Position:{" "}
-                    <motion.span>
-                        {useTransform(() => Math.floor(position.get()))}
-                    </motion.span>
-                </p>
-
-                <p>
-                    y:{" "}
-                    <motion.span>{useTransform(() => Math.floor(y.get()))}</motion.span>
-                </p>
-
-                <p>{region}</p>
-            </div>
         </div>
     );
 }
