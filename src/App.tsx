@@ -1,6 +1,7 @@
 import AppstoreCard from "./components/AppstoreCard";
 import ComponentCard from "./components/componentCard";
 import Container from "./components/container";
+import IosSlider from "./components/IosSlider";
 // import MailClient from "./components/mailClient";
 
 function App() {
@@ -14,6 +15,10 @@ function App() {
 
                 <ComponentCard title="Appstore card">
                     <AppstoreCard />
+                </ComponentCard>
+
+                <ComponentCard title="Ios slider">
+                    <IosSlider />
                 </ComponentCard>
 
                 {/* <ComponentCard title="Mail client">
