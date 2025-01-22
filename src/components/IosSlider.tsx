@@ -47,7 +47,7 @@ export default function IosSlider() {
         <div className="flex flex-col items-center justify-center gap-12 py-12">
             <Slider.Root
                 ref={ref}
-                className="relative flex items-center w-12 h-full select-none cursor-grab touch-none active:cursor-grabbing"
+                className="relative flex items-center w-20 h-full select-none cursor-grab touch-none active:cursor-grabbing"
                 value={[volume]}
                 onValueChange={(values) => setVolume(values[0])}
                 orientation="vertical"
@@ -90,7 +90,7 @@ export default function IosSlider() {
                         }}
                         className="flex w-12 h-full grow"
                     >
-                        <Slider.Track className="relative h-32 overflow-hidden rounded-2xl grow bg-zinc-800">
+                        <Slider.Track className="relative h-56 overflow-hidden rounded-[1.6rem] grow bg-zinc-800">
                             <Slider.Range className="absolute w-full bg-zinc-100 " />
                         </Slider.Track>
                     </motion.div>
