@@ -3,6 +3,7 @@ import {
     animate,
     AnimatePresence,
     motion,
+    motionValue,
     MotionValue,
     useMotionValue,
     useMotionValueEvent,
@@ -113,14 +114,20 @@ export default function IosSlider() {
 }
 
 function SoundIcon({ volume, y }: { volume: number; y: MotionValue<number> }) {
+    const variants = {
+        hidden: { opacity: 0, scale: 0.5 },
+        visible: { opacity: 1, scale: 1 },
+    };
+
+    const base = 16.54;
+    const small = 26.15;
+    const medium = 33.08;
+    const large = 40.38;
+
     return (
         <motion.svg
             style={{ y, translateX: "-50%" }}
             width={(() => {
-                const base = 16.54;
-                const small = 26.15;
-                const medium = 33.08;
-                const large = 40.38;
                 if (volume > 66) return large;
                 if (volume > 33) return medium;
                 if (volume > 0) return small;
@@ -139,20 +146,24 @@ function SoundIcon({ volume, y }: { volume: number; y: MotionValue<number> }) {
             })()}
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="absolute z-10 transform -translate-x-1/2 bottom-1 left-1/2"
+            className="absolute z-10 overflow-visible transform -translate-x-1/2 bottom-1 left-1/2"
         >
-            <AnimatePresence>
-                <path
-                    d="M43 7.85886C42.999 7.29321 42.801 6.74048 42.4308 6.27043C42.0606 5.80037 41.5349 5.43405 40.92 5.2177C40.3051 5.00135 39.6286 4.94466 38.9759 5.05479C38.3231 5.16491 37.7234 5.43692 37.2523 5.83649L21.0843 19.5748C20.4604 20.1083 19.718 20.5313 18.9004 20.8192C18.0827 21.1071 17.2059 21.2542 16.3209 21.252H4.77778C3.51063 21.252 2.29539 21.6798 1.39938 22.4414C0.503371 23.203 0 24.2359 0 25.313V49.6789C0 50.7559 0.503371 51.7889 1.39938 52.5504C2.29539 53.312 3.51063 53.7399 4.77778 53.7399H16.3209C17.2059 53.7377 18.0827 53.8848 18.9004 54.1727C19.718 54.4606 20.4604 54.8836 21.0843 55.4171L37.2475 69.1595C37.7186 69.5607 38.3192 69.834 38.9732 69.9448C39.6273 70.0556 40.3052 69.9989 40.9213 69.7818C41.5374 69.5648 42.0638 69.1972 42.4338 68.7257C42.8039 68.2541 43.0009 67.6998 43 67.133V7.85886Z"
-                    fill="#32ADE6"
-                />
+            <motion.path
+                d="M43 7.85886C42.999 7.29321 42.801 6.74048 42.4308 6.27043C42.0606 5.80037 41.5349 5.43405 40.92 5.2177C40.3051 5.00135 39.6286 4.94466 38.9759 5.05479C38.3231 5.16491 37.7234 5.43692 37.2523 5.83649L21.0843 19.5748C20.4604 20.1083 19.718 20.5313 18.9004 20.8192C18.0827 21.1071 17.2059 21.2542 16.3209 21.252H4.77778C3.51063 21.252 2.29539 21.6798 1.39938 22.4414C0.503371 23.203 0 24.2359 0 25.313V49.6789C0 50.7559 0.503371 51.7889 1.39938 52.5504C2.29539 53.312 3.51063 53.7399 4.77778 53.7399H16.3209C17.2059 53.7377 18.0827 53.8848 18.9004 54.1727C19.718 54.4606 20.4604 54.8836 21.0843 55.4171L37.2475 69.1595C37.7186 69.5607 38.3192 69.834 38.9732 69.9448C39.6273 70.0556 40.3052 69.9989 40.9213 69.7818C41.5374 69.5648 42.0638 69.1972 42.4338 68.7257C42.8039 68.2541 43.0009 67.6998 43 67.133V7.85886Z"
+                fill="#32ADE6"
+            />
+            <AnimatePresence mode="popLayout">
                 {volume > 0 && (
                     <motion.path
                         d="M60 23C62.5964 27.0389 64 31.9514 64 37C64 42.0486 62.5964 46.9611 60 51"
                         stroke="#8BC4E1"
                         strokeWidth="7"
-                        stroke-linecap="round"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
+                        variants={variants}
+                        initial="hidden"
+                        exit="hidden"
+                        animate="visible"
                     />
                 )}
                 {volume > 33 && (
@@ -162,6 +173,10 @@ function SoundIcon({ volume, y }: { volume: number; y: MotionValue<number> }) {
                         strokeWidth="7"
                         strokeLinecap="round"
                         strokeLinejoin="round"
+                        variants={variants}
+                        initial="hidden"
+                        exit="hidden"
+                        animate="visible"
                     />
                 )}
                 {volume > 66 && (
@@ -171,6 +186,10 @@ function SoundIcon({ volume, y }: { volume: number; y: MotionValue<number> }) {
                         strokeWidth="7"
                         strokeLinecap="round"
                         strokeLinejoin="round"
+                        variants={variants}
+                        initial="hidden"
+                        exit="hidden"
+                        animate="visible"
                     />
                 )}
             </AnimatePresence>
