@@ -29,12 +29,15 @@ export default function IosSlider() {
             let newOverflow = 0;
 
             if (latest < bounds.top) {
+                console.log("Top");
                 setRegion("top");
                 newOverflow = bounds.top - latest;
             } else if (latest > bounds.bottom) {
+                console.log("bottom");
                 setRegion("bottom");
                 newOverflow = latest - bounds.bottom;
             } else {
+                console.log("middle");
                 setRegion("middle");
                 newOverflow = 0;
             }
@@ -57,11 +60,7 @@ export default function IosSlider() {
                     }
                 }}
                 onLostPointerCapture={() => {
-                    animate(overflow, 0, {
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 20,
-                    });
+                    animate(overflow, 0, { type: "spring", stiffness: 500, damping: 30 });
                 }}
             >
                 <motion.div
@@ -72,7 +71,13 @@ export default function IosSlider() {
 
                             return (bounds.height + overflow.get()) / bounds.height;
                         }),
-                        transformOrigin: region === "top" ? "bottom" : "top",
+                        transformOrigin: useTransform(() => {
+                            if (ref.current) {
+                                const { top } = ref.current.getBoundingClientRect();
+
+                                return top < clientY.get() ? "top" : "bottom";
+                            }
+                        }),
                         y: useTransform(() => {
                             if (region === "top") return decay(-overflow.get() / 4, 30);
                             if (region === "bottom") return decay(overflow.get() / 4, 30);
@@ -92,6 +97,8 @@ export default function IosSlider() {
                     </Slider.Track>
                 </motion.div>
             </Slider.Root>
+
+            <p>{region}</p>
         </div>
     );
 }
