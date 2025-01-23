@@ -47,7 +47,7 @@ export default function IosSlider() {
         <div className="flex flex-col items-center justify-center gap-12 py-12">
             <Slider.Root
                 ref={ref}
-                className="relative flex items-center w-20 h-full select-none cursor-grab touch-none active:cursor-grabbing"
+                className="relative flex items-center w-20 w-full select-none grow max-h-56 cursor-grab touch-none active:cursor-grabbing"
                 value={[volume]}
                 onValueChange={(values) => setVolume(values[0])}
                 orientation="vertical"
@@ -64,36 +64,32 @@ export default function IosSlider() {
                     });
                 }}
             >
-                <motion.div className="flex grow">
-                    <motion.div
-                        style={{
-                            scaleY: useTransform(() => {
-                                if (!ref.current) return 1;
-                                const bounds = ref.current.getBoundingClientRect();
+                <motion.div
+                    style={{
+                        scaleY: useTransform(() => {
+                            if (!ref.current) return 1;
+                            const bounds = ref.current.getBoundingClientRect();
 
-                                return (bounds.height + overflow.get()) / bounds.height;
-                            }),
-                            transformOrigin: region === "top" ? "bottom" : "top",
-                            y: useTransform(() => {
-                                if (region === "top")
-                                    return decay(-overflow.get() / 4, 30);
-                                if (region === "bottom")
-                                    return decay(overflow.get() / 4, 30);
-                                return 0;
-                            }),
-                            scaleX: useTransform(() => {
-                                if (!ref.current) return 1;
-                                const bounds = ref.current.getBoundingClientRect();
+                            return (bounds.height + overflow.get()) / bounds.height;
+                        }),
+                        transformOrigin: region === "top" ? "bottom" : "top",
+                        y: useTransform(() => {
+                            if (region === "top") return decay(-overflow.get() / 4, 30);
+                            if (region === "bottom") return decay(overflow.get() / 4, 30);
+                            return 0;
+                        }),
+                        scaleX: useTransform(() => {
+                            if (!ref.current) return 1;
+                            const bounds = ref.current.getBoundingClientRect();
 
-                                return (bounds.width - overflow.get() / 8) / bounds.width;
-                            }),
-                        }}
-                        className="flex w-12 h-full grow"
-                    >
-                        <Slider.Track className="relative h-56 overflow-hidden rounded-[1.6rem] grow bg-zinc-800">
-                            <Slider.Range className="absolute w-full bg-zinc-100 " />
-                        </Slider.Track>
-                    </motion.div>
+                            return (bounds.width - overflow.get() / 8) / bounds.width;
+                        }),
+                    }}
+                    className="flex h-56 grow"
+                >
+                    <Slider.Track className="relative h-full w-full isolate overflow-hidden rounded-[1.6rem] grow bg-zinc-800">
+                        <Slider.Range className="absolute w-full bg-zinc-100 " />
+                    </Slider.Track>
                 </motion.div>
             </Slider.Root>
         </div>
