@@ -12,7 +12,7 @@ export default function IosAlarmPicker() {
     return (
         <div className="w-96">
             <Picker
-                value="0"
+                value="6"
                 onChange={(value) => console.log(value)}
                 options={Array.from({ length: 12 }, (_, i) => i.toString())}
             />
@@ -49,11 +49,17 @@ function Picker({
             -index * optionHeight + containerBounds.height / 2 - optionHeight / 2;
 
         animate(y, snapY, { type: "spring", stiffness: 500, damping: 30 });
+
+        onChange(options[index]);
     };
 
     useEffect(() => {
         if (containerBounds.height && optionsBounds.height) {
-            y.set(containerBounds.height / 2 - optionHeight / 2);
+            y.set(
+                containerBounds.height / 2 -
+                    optionHeight / 2 -
+                    parseInt(value) * optionHeight
+            );
         }
     }, [containerBounds, optionHeight, optionsBounds, y]);
 
@@ -80,6 +86,7 @@ function Picker({
                         index={index}
                         optionHeight={optionHeight}
                         relativeHeigt={relativeHeigt}
+                        key={option}
                     />
                 ))}
             </motion.div>
