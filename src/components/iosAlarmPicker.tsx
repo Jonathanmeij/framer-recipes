@@ -1,14 +1,20 @@
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import useMeasure from "react-use-measure";
+import {
+    animate,
+    motion,
+    MotionValue,
+    useMotionValue,
+    useTransform,
+} from "framer-motion";
 import { useEffect } from "react";
+import useMeasure from "react-use-measure";
 
 export default function IosAlarmPicker() {
     return (
         <div className="w-96">
             <Picker
-                value="00"
+                value="0"
                 onChange={(value) => console.log(value)}
-                options={Array.from({ length: 13 }, (_, i) => i.toString())}
+                options={Array.from({ length: 12 }, (_, i) => i.toString())}
             />
         </div>
     );
@@ -25,60 +31,100 @@ function Picker({
 }) {
     const [ref, containerBounds] = useMeasure();
     const [refOptions, optionsBounds] = useMeasure();
-    const y = useMotionValue(0);
-    const ITEM_HEIGHT = 32; // height of each option (h-8 = 32px)
+    const optionHeight = optionsBounds.height / options.length;
 
-    // Calculate the closest snap point
-    const calculateSnapPoint = (y: number) => {
-        const itemIndex = Math.round(y / ITEM_HEIGHT);
-        return itemIndex * ITEM_HEIGHT;
-    };
+    const y = useMotionValue(0);
+
+    const relativeHeigt = (value: number) =>
+        value - containerBounds.height / 2 + optionHeight / 2;
 
     const handleDragEnd = () => {
-        const currentY = y.get();
-        const snapPoint = calculateSnapPoint(currentY);
+        const optionHeight = optionsBounds.height / options.length;
+        let index = Math.round(-relativeHeigt(y.get()) / optionHeight);
 
-        // Animate to the nearest snap point
-        animate(y, snapPoint, {
-            type: "spring",
-            stiffness: 400,
-            damping: 30,
-        });
+        if (index < 0) index = 0;
+        if (index >= options.length) index = options.length - 1;
 
-        // Calculate selected index and call onChange
-        const selectedIndex = Math.abs(Math.round(snapPoint / ITEM_HEIGHT));
-        onChange(options[selectedIndex]);
+        const snapY =
+            -index * optionHeight + containerBounds.height / 2 - optionHeight / 2;
+
+        animate(y, snapY, { type: "spring", stiffness: 500, damping: 30 });
     };
 
-    // Set initial position based on value prop
     useEffect(() => {
-        const index = options.indexOf(value);
-        if (index !== -1) {
-            y.set(-index * ITEM_HEIGHT);
+        if (containerBounds.height && optionsBounds.height) {
+            y.set(containerBounds.height / 2 - optionHeight / 2);
         }
-    }, [value, options, y]);
+    }, [containerBounds, optionHeight, optionsBounds, y]);
 
     return (
-        <div className="relative h-40 text-lg bg-blue-900" ref={ref}>
-            <div className="absolute flex items-center justify-center w-full font-light -translate-y-1/2 rounded-lg top-1/2 h-7 bg-zinc-100/10"></div>
+        <div className="relative h-40 text-lg " ref={ref}>
+            <div className="absolute flex items-center justify-center w-full font-light -translate-y-1/2 rounded-lg top-1/2 h-7 bg-zinc-100/5"></div>
             <motion.div
                 drag="y"
                 ref={refOptions}
-                style={{ y }}
                 onDragEnd={handleDragEnd}
                 dragConstraints={{
                     top: -optionsBounds.height + containerBounds.height / 2,
                     bottom: containerBounds.height / 2,
                 }}
-                className="absolute top-0 tabular-nums text-zinc-100"
+                style={{
+                    y,
+                }}
+                className="absolute top-0 px-6 tabular-nums text-zinc-100"
             >
-                {options.map((option) => (
-                    <div className="flex items-center h-8" key={option}>
-                        {option.length === 1 && 0}
-                        {option}
-                    </div>
+                {options.map((option, index) => (
+                    <PickerOption
+                        option={option}
+                        y={y}
+                        index={index}
+                        optionHeight={optionHeight}
+                        relativeHeigt={relativeHeigt}
+                    />
                 ))}
             </motion.div>
+
+            {/* <motion.div>
+                {useTransform(() => {
+                    return relativeHeigt(y.get());
+                })}
+            </motion.div> */}
+            {/* <div>{heightForIndex(1)}</div> */}
         </div>
+    );
+}
+
+function PickerOption({
+    option,
+    y,
+    index,
+    optionHeight,
+    relativeHeigt,
+}: {
+    option: string;
+    y: MotionValue<number>;
+    index: number;
+    optionHeight: number;
+    relativeHeigt: (value: number) => number;
+}) {
+    const heightForIndex = (index: number) => index * optionHeight;
+
+    return (
+        <motion.div
+            style={{
+                opacity: useTransform(() => {
+                    const distance = Math.abs(
+                        -heightForIndex(index) - relativeHeigt(y.get())
+                    );
+                    const opacity = Math.max(0, Math.min(1, 1 - distance / 75));
+                    return opacity;
+                }),
+            }}
+            className="flex items-center h-8"
+            key={option}
+        >
+            {option.length === 1 && 0}
+            {option}
+        </motion.div>
     );
 }
