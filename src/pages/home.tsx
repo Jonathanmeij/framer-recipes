@@ -2,6 +2,7 @@ import AppstoreCard from "@/components/AppstoreCard";
 import ComponentCard from "@/components/componentCard";
 import ConfirmButton from "@/components/confirmButton";
 import Container from "@/components/container";
+import IosAlarmPicker from "@/components/iosAlarmPicker";
 import IosSlider from "@/components/IosSlider";
 
 export default function Home() {
@@ -25,6 +26,10 @@ export default function Home() {
 
                 <ComponentCard title="Confirm button">
                     <ConfirmButton />
+                </ComponentCard>
+
+                <ComponentCard title="Ios alarm picker">
+                    <IosAlarmPicker />
                 </ComponentCard>
 
                 <div className="h-12"></div>

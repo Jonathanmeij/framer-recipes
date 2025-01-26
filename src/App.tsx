@@ -3,6 +3,7 @@ import AppstoreCard from "./components/AppstoreCard";
 import IosSlider from "./components/IosSlider";
 import Home from "./pages/home";
 import ConfirmButton from "./components/confirmButton";
+import IosAlarmPicker from "./components/iosAlarmPicker";
 
 function App() {
     return (
@@ -31,6 +32,15 @@ function App() {
                 element={
                     <PageWrapper>
                         <ConfirmButton />
+                    </PageWrapper>
+                }
+            />
+
+            <Route
+                path="/Ios alarm picker"
+                element={
+                    <PageWrapper>
+                        <IosAlarmPicker />
                     </PageWrapper>
                 }
             />
