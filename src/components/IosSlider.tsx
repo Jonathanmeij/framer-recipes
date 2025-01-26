@@ -49,7 +49,7 @@ export default function IosSlider() {
     });
 
     return (
-        <div className="flex flex-col items-center justify-center gap-12 py-12">
+        <div className="flex">
             <Slider.Root
                 ref={ref}
                 className="relative flex items-center w-20 select-none grow max-h-56 cursor-grab touch-none active:cursor-grabbing"

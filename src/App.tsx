@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import AppstoreCard from "./components/AppstoreCard";
 import IosSlider from "./components/IosSlider";
 import Home from "./pages/home";
+import ConfirmButton from "./components/confirmButton";
 
 function App() {
     return (
@@ -21,6 +22,15 @@ function App() {
                 element={
                     <PageWrapper>
                         <IosSlider />
+                    </PageWrapper>
+                }
+            />
+
+            <Route
+                path="/Confirm button"
+                element={
+                    <PageWrapper>
+                        <ConfirmButton />
                     </PageWrapper>
                 }
             />

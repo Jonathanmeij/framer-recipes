@@ -1,5 +1,6 @@
 import AppstoreCard from "@/components/AppstoreCard";
 import ComponentCard from "@/components/componentCard";
+import ConfirmButton from "@/components/confirmButton";
 import Container from "@/components/container";
 import IosSlider from "@/components/IosSlider";
 
@@ -20,6 +21,10 @@ export default function Home() {
 
                 <ComponentCard title="Appstore card">
                     <AppstoreCard />
+                </ComponentCard>
+
+                <ComponentCard title="Confirm button">
+                    <ConfirmButton />
                 </ComponentCard>
 
                 <div className="h-12"></div>

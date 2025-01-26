@@ -12,7 +12,7 @@ export default function AppstoreCard() {
     const [currentApp, setCurrentApp] = useState<App | null>(null);
 
     return (
-        <div className="flex flex-col items-center w-full py-12">
+        <div className="flex flex-col items-center w-full ">
             <AppItem
                 app={{
                     title: "House manager and planner",
