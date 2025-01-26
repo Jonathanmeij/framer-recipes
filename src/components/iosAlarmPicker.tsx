@@ -115,7 +115,7 @@ function Picker({
                 style={{
                     y,
                 }}
-                className="absolute top-0 px-6 tabular-nums text-zinc-100"
+                className="absolute top-0 flex flex-col items-center justify-center w-full px-6 tabular-nums text-zinc-100"
             >
                 {options.map((option, index) => (
                     <PickerOption
