@@ -2,6 +2,8 @@ import {
     animate,
     motion,
     MotionValue,
+    PanInfo,
+    useAnimationControls,
     useMotionValue,
     useTransform,
 } from "framer-motion";
@@ -14,7 +16,7 @@ export default function IosAlarmPicker() {
             <Picker
                 value="6"
                 onChange={(value) => console.log(value)}
-                options={Array.from({ length: 12 }, (_, i) => i.toString())}
+                options={Array.from({ length: 1200 }, (_, i) => i.toString())}
             />
         </div>
     );
@@ -33,25 +35,59 @@ function Picker({
     const [refOptions, optionsBounds] = useMeasure();
     const optionHeight = optionsBounds.height / options.length;
 
+    const controls = useAnimationControls();
+
     const y = useMotionValue(0);
 
     const relativeHeigt = (value: number) =>
         value - containerBounds.height / 2 + optionHeight / 2;
 
-    const handleDragEnd = () => {
-        const optionHeight = optionsBounds.height / options.length;
-        let index = Math.round(-relativeHeigt(y.get()) / optionHeight);
+    // const handleDragEnd = () => {
+    //     const optionHeight = optionsBounds.height / options.length;
+    //     let index = Math.round(-relativeHeigt(y.get()) / optionHeight);
 
-        if (index < 0) index = 0;
-        if (index >= options.length) index = options.length - 1;
+    //     if (index < 0) index = 0;
+    //     if (index >= options.length) index = options.length - 1;
 
-        const snapY =
-            -index * optionHeight + containerBounds.height / 2 - optionHeight / 2;
+    //     const snapY =
+    //         -index * optionHeight + containerBounds.height / 2 - optionHeight / 2;
 
-        animate(y, snapY, { type: "spring", stiffness: 500, damping: 30 });
+    //     animate(y, snapY, { type: "spring", stiffness: 500, damping: 30 });
 
-        onChange(options[index]);
-    };
+    //     onChange(options[index]);
+    // };
+
+    function handleDragEnd(event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) {
+        // For example, animate back to x=0 when released
+        controls.stop();
+        controls
+            .start({
+                y: 0,
+                transition: {
+                    type: "inertia",
+                    velocity: info.velocity.y,
+                    power: 0.8, // or lower if you want less “push”
+                    timeConstant: 300, // lower = ends quicker
+                    restDelta: 1, // stops the animation sooner than default
+                    bounceStiffness: 300,
+                    bounceDamping: 20,
+                },
+            })
+            .then(() => {
+                const optionHeight = optionsBounds.height / options.length;
+                let index = Math.round(-relativeHeigt(y.get()) / optionHeight);
+
+                if (index < 0) index = 0;
+                if (index >= options.length) index = options.length - 1;
+
+                const snapY =
+                    -index * optionHeight + containerBounds.height / 2 - optionHeight / 2;
+
+                animate(y, snapY, { type: "spring", stiffness: 500, damping: 30 });
+
+                onChange(options[index]);
+            });
+    }
 
     useEffect(() => {
         if (containerBounds.height && optionsBounds.height) {
@@ -61,7 +97,7 @@ function Picker({
                     parseInt(value) * optionHeight
             );
         }
-    }, [containerBounds, optionHeight, optionsBounds, y]);
+    }, [containerBounds, optionHeight, optionsBounds, y, value]);
 
     return (
         <div className="relative h-40 text-lg " ref={ref}>
@@ -70,6 +106,8 @@ function Picker({
                 drag="y"
                 ref={refOptions}
                 onDragEnd={handleDragEnd}
+                animate={controls}
+                dragMomentum={false}
                 dragConstraints={{
                     top: -optionsBounds.height + containerBounds.height / 2,
                     bottom: containerBounds.height / 2,
