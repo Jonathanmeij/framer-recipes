@@ -57,7 +57,7 @@ function Picker({
     //     onChange(options[index]);
     // };
 
-    function handleDragEnd(event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) {
+    function handleDragEnd(_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) {
         // For example, animate back to x=0 when released
         controls.stop();
         controls
@@ -68,7 +68,7 @@ function Picker({
                     velocity: info.velocity.y,
                     power: 0.8, // or lower if you want less “push”
                     timeConstant: 300, // lower = ends quicker
-                    restDelta: 1, // stops the animation sooner than default
+                    restDelta: 1,
                     bounceStiffness: 300,
                     bounceDamping: 20,
                 },
