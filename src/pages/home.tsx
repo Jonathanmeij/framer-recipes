@@ -16,7 +16,7 @@ export default function Home() {
                     </p>
                 </div>
 
-                <ComponentCard title="Ios slider">
+                <ComponentCard title="IOS slider">
                     <IosSlider />
                 </ComponentCard>
 
@@ -28,7 +28,7 @@ export default function Home() {
                     <ConfirmButton />
                 </ComponentCard>
 
-                <ComponentCard title="Ios alarm picker">
+                <ComponentCard title="IOS alarm picker">
                     <IosAlarmPicker />
                 </ComponentCard>
 

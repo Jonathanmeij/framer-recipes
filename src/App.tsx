@@ -19,7 +19,7 @@ function App() {
             />
 
             <Route
-                path="/ios slider"
+                path="/IOS slider"
                 element={
                     <PageWrapper>
                         <IosSlider />
@@ -37,7 +37,7 @@ function App() {
             />
 
             <Route
-                path="/Ios alarm picker"
+                path="/IOS alarm picker"
                 element={
                     <PageWrapper>
                         <IosAlarmPicker />

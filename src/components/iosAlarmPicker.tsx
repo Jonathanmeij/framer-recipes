@@ -7,7 +7,7 @@ import {
     useMotionValue,
     useTransform,
 } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import useMeasure from "react-use-measure";
 
 export default function IosAlarmPicker() {
@@ -16,7 +16,7 @@ export default function IosAlarmPicker() {
             <Picker
                 value="6"
                 onChange={(value) => console.log(value)}
-                options={Array.from({ length: 1200 }, (_, i) => i.toString())}
+                options={Array.from({ length: 100 }, (_, i) => i.toString())}
             />
         </div>
     );
@@ -34,6 +34,7 @@ function Picker({
     const [ref, containerBounds] = useMeasure();
     const [refOptions, optionsBounds] = useMeasure();
     const optionHeight = optionsBounds.height / options.length;
+    const animationIdRef = useRef(0); // Track the current animation ID
 
     const controls = useAnimationControls();
 
@@ -42,43 +43,33 @@ function Picker({
     const relativeHeigt = (value: number) =>
         value - containerBounds.height / 2 + optionHeight / 2;
 
-    // const handleDragEnd = () => {
-    //     const optionHeight = optionsBounds.height / options.length;
-    //     let index = Math.round(-relativeHeigt(y.get()) / optionHeight);
-
-    //     if (index < 0) index = 0;
-    //     if (index >= options.length) index = options.length - 1;
-
-    //     const snapY =
-    //         -index * optionHeight + containerBounds.height / 2 - optionHeight / 2;
-
-    //     animate(y, snapY, { type: "spring", stiffness: 500, damping: 30 });
-
-    //     onChange(options[index]);
-    // };
-
     function handleDragEnd(_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) {
         // For example, animate back to x=0 when released
         controls.stop();
+
+        const currentAnimationId = ++animationIdRef.current;
+
         controls
             .start({
                 y: 0,
                 transition: {
                     type: "inertia",
                     velocity: info.velocity.y,
-                    power: 0.8, // or lower if you want less “push”
-                    timeConstant: 300, // lower = ends quicker
-                    restDelta: 1,
+                    power: 0.8,
+                    timeConstant: 300,
                     bounceStiffness: 300,
                     bounceDamping: 20,
+                    max: optionsBounds.height / 2,
                 },
             })
             .then(() => {
+                if (currentAnimationId !== animationIdRef.current) return;
+
                 const optionHeight = optionsBounds.height / options.length;
                 let index = Math.round(-relativeHeigt(y.get()) / optionHeight);
 
-                if (index < 0) index = 0;
-                if (index >= options.length) index = options.length - 1;
+                // Clamp index to valid range
+                index = Math.max(0, Math.min(index, options.length - 1));
 
                 const snapY =
                     -index * optionHeight + containerBounds.height / 2 - optionHeight / 2;
@@ -100,7 +91,7 @@ function Picker({
     }, [containerBounds, optionHeight, optionsBounds, y, value]);
 
     return (
-        <div className="relative h-40 text-lg " ref={ref}>
+        <div className="relative h-64 text-lg " ref={ref}>
             <div className="absolute flex items-center justify-center w-full font-light -translate-y-1/2 rounded-lg top-1/2 h-7 bg-zinc-100/5"></div>
             <motion.div
                 drag="y"
