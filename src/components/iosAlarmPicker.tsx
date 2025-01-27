@@ -56,10 +56,10 @@ function Picker({
                 transition: {
                     type: "inertia",
                     velocity: info.velocity.y,
-                    power: 0.8,
-                    timeConstant: 100,
-                    bounceStiffness: 50,
-                    bounceDamping: 20,
+                    power: 1,
+                    timeConstant: 200,
+                    bounceStiffness: 150,
+                    bounceDamping: 30,
                     min: containerTopConstraint + optionHeight / 2,
                     max: containerBottomConstraint - optionHeight / 2,
                 },
@@ -76,7 +76,12 @@ function Picker({
                 const snapY =
                     -index * optionHeight + containerBounds.height / 2 - optionHeight / 2;
 
-                animate(y, snapY, { type: "spring", stiffness: 500, damping: 30 });
+                animate(y, snapY, {
+                    type: "spring",
+                    stiffness: 150,
+                    damping: 30,
+                    power: 1,
+                });
 
                 onChange(options[index]);
             });
@@ -93,7 +98,7 @@ function Picker({
     }, [containerBounds, optionHeight, optionsBounds, y, value]);
 
     return (
-        <div className="relative h-40 overflow-hidden text-lg " ref={ref}>
+        <div className="relative h-64 overflow-hidden text-lg " ref={ref}>
             <div className="absolute flex items-center justify-center w-full font-light -translate-y-1/2 rounded-lg top-1/2 h-7 bg-zinc-100/5"></div>
             <motion.div
                 drag="y"
