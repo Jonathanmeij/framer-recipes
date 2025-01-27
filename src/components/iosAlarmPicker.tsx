@@ -8,7 +8,7 @@ import {
     useTransform,
 } from "framer-motion";
 import { useEffect, useRef } from "react";
-import useMeasure from "react-use-measure";
+import useMeasure, { RectReadOnly } from "react-use-measure";
 
 export default function IosAlarmPicker() {
     return (
@@ -35,10 +35,11 @@ function Picker({
     const [refOptions, optionsBounds] = useMeasure();
     const optionHeight = optionsBounds.height / options.length;
     const animationIdRef = useRef(0); // Track the current animation ID
-
     const controls = useAnimationControls();
-
     const y = useMotionValue(0);
+
+    const containerTopConstraint = -optionsBounds.height + containerBounds.height / 2;
+    const containerBottomConstraint = containerBounds.height / 2;
 
     const relativeHeigt = (value: number) =>
         value - containerBounds.height / 2 + optionHeight / 2;
@@ -56,10 +57,11 @@ function Picker({
                     type: "inertia",
                     velocity: info.velocity.y,
                     power: 0.8,
-                    timeConstant: 300,
-                    bounceStiffness: 300,
+                    timeConstant: 100,
+                    bounceStiffness: 50,
                     bounceDamping: 20,
-                    max: optionsBounds.height / 2,
+                    min: containerTopConstraint + optionHeight / 2,
+                    max: containerBottomConstraint - optionHeight / 2,
                 },
             })
             .then(() => {
@@ -91,7 +93,7 @@ function Picker({
     }, [containerBounds, optionHeight, optionsBounds, y, value]);
 
     return (
-        <div className="relative h-64 text-lg " ref={ref}>
+        <div className="relative h-40 overflow-hidden text-lg " ref={ref}>
             <div className="absolute flex items-center justify-center w-full font-light -translate-y-1/2 rounded-lg top-1/2 h-7 bg-zinc-100/5"></div>
             <motion.div
                 drag="y"
@@ -100,8 +102,8 @@ function Picker({
                 animate={controls}
                 dragMomentum={false}
                 dragConstraints={{
-                    top: -optionsBounds.height + containerBounds.height / 2,
-                    bottom: containerBounds.height / 2,
+                    top: containerTopConstraint,
+                    bottom: containerBottomConstraint,
                 }}
                 style={{
                     y,
@@ -110,6 +112,7 @@ function Picker({
             >
                 {options.map((option, index) => (
                     <PickerOption
+                        containerBounds={containerBounds}
                         option={option}
                         y={y}
                         index={index}
@@ -136,24 +139,33 @@ function PickerOption({
     index,
     optionHeight,
     relativeHeigt,
+    containerBounds,
 }: {
     option: string;
     y: MotionValue<number>;
     index: number;
     optionHeight: number;
     relativeHeigt: (value: number) => number;
+    containerBounds: RectReadOnly;
 }) {
     const heightForIndex = (index: number) => index * optionHeight;
+
+    const percentageToBorder = (index: number) => {
+        const relativeY = relativeHeigt(y.get()) + heightForIndex(index);
+        const halfHeight = containerBounds.height / 2;
+        const distance = Math.abs(relativeY) / halfHeight;
+
+        if (index === 0) {
+            console.log(distance);
+        }
+        return Math.max(0, Math.min(1, 1 - distance));
+    };
 
     return (
         <motion.div
             style={{
                 opacity: useTransform(() => {
-                    const distance = Math.abs(
-                        -heightForIndex(index) - relativeHeigt(y.get())
-                    );
-                    const opacity = Math.max(0, Math.min(1, 1 - distance / 75));
-                    return opacity;
+                    return percentageToBorder(index);
                 }),
             }}
             className="flex items-center h-8"
