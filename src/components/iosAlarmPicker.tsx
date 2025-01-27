@@ -69,8 +69,6 @@ function Picker({
 
                 const optionHeight = optionsBounds.height / options.length;
                 let index = Math.round(-relativeHeigt(y.get()) / optionHeight);
-
-                // Clamp index to valid range
                 index = Math.max(0, Math.min(index, options.length - 1));
 
                 const snapY =
@@ -160,9 +158,6 @@ function PickerOption({
         const halfHeight = containerBounds.height / 2;
         const distance = Math.abs(relativeY) / halfHeight;
 
-        if (index === 0) {
-            console.log(distance);
-        }
         return Math.max(0, Math.min(1, 1 - distance));
     };
 
